@@ -1,0 +1,214 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --------------------------------------
+// 1. Users & Auth
+// --------------------------------------
+
+enum Role {
+  LEARNER
+  INSTRUCTOR
+  ADMIN
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  role         Role     @default(LEARNER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  sessions     Session[]
+  enrollments  Enrollment[]
+  bookmarks    ResourceBookmark[]
+  completedLessons LessonProgress[]
+  inquiryNotes InquiryNote[]
+  // Cohorts managed or member of can be added
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique // For cookie
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// --------------------------------------
+// 2. AI Academy Content
+// --------------------------------------
+
+model Path {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  title       String
+  description String
+  audienceTag String   // Beginner, Builder, Teacher
+  active      Boolean  @default(true)
+  
+  modules     Module[]
+  enrollments Enrollment[]
+}
+
+model Module {
+  id          String   @id @default(uuid())
+  pathId      String
+  index       Int      // Week 1, 2, etc.
+  title       String
+  description String
+  
+  path        Path     @relation(fields: [pathId], references: [id])
+  lessons     Lesson[]
+}
+
+model Lesson {
+  id              String   @id @default(uuid())
+  moduleId        String
+  index           Int
+  title           String
+  summary         String?
+  durationMinutes Int?
+  contentMarkdown String?
+  type            String   // concept, exercise, reading, video
+  difficulty      String?
+  
+  module          Module   @relation(fields: [moduleId], references: [id])
+  progress        LessonProgress[]
+}
+
+model Concept {
+  id           String   @id @default(uuid())
+  slug         String   @unique
+  title        String
+  category     String   // Foundations, Core ML, GenAI...
+  intuition    String?  // ELI5
+  analogy      String?
+  bodyMarkdown String? 
+  difficulty   String?
+}
+
+model Resource {
+  id            String   @id @default(uuid())
+  title         String
+  type          String   // Course, Video, etc.
+  url           String
+  provider      String?
+  rating        Float?
+  durationLabel String?
+  difficulty    String?
+  tags          String[]
+  description   String?
+  
+  bookmarks     ResourceBookmark[]
+}
+
+model ProjectTemplate {
+  id             String   @id @default(uuid())
+  slug           String   @unique
+  title          String
+  description    String
+  difficulty     String?
+  estimatedHours Int?
+  tools          String[]
+  milestones     Json?    // Array of steps
+  starterRepoUrl String?
+}
+
+// --------------------------------------
+// 3. Progress Tracking
+// --------------------------------------
+
+model Enrollment {
+  id          String    @id @default(uuid())
+  userId      String
+  pathId      String
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  user        User      @relation(fields: [userId], references: [id])
+  path        Path      @relation(fields: [pathId], references: [id])
+
+  @@unique([userId, pathId])
+}
+
+enum LessonStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  DONE
+}
+
+model LessonProgress {
+  id          String       @id @default(uuid())
+  userId      String
+  lessonId    String
+  status      LessonStatus @default(NOT_STARTED)
+  updatedAt   DateTime     @updatedAt
+
+  user        User         @relation(fields: [userId], references: [id])
+  lesson      Lesson       @relation(fields: [lessonId], references: [id])
+
+  @@unique([userId, lessonId])
+}
+
+model ResourceBookmark {
+  id         String   @id @default(uuid())
+  userId     String
+  resourceId String
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id])
+  resource   Resource @relation(fields: [resourceId], references: [id])
+
+  @@unique([userId, resourceId])
+}
+
+// --------------------------------------
+// 4. Consulting / Agency
+// --------------------------------------
+
+enum InquiryStatus {
+  NEW
+  QUALIFIED
+  IN_PROGRESS
+  WON
+  LOST
+}
+
+model ConsultingInquiry {
+  id            String   @id @default(uuid())
+  createdAt     DateTime @default(now())
+  status        InquiryStatus @default(NEW)
+  
+  name          String
+  email         String
+  company       String?
+  roleTitle     String?
+  budgetRange   String?
+  timeline      String?
+  serviceType   String?
+  message       String
+  phone         String?
+  
+  notes         InquiryNote[]
+}
+
+model InquiryNote {
+  id        String   @id @default(uuid())
+  inquiryId String
+  userId    String
+  body      String
+  createdAt DateTime @default(now())
+
+  inquiry   ConsultingInquiry @relation(fields: [inquiryId], references: [id])
+  user      User              @relation(fields: [userId], references: [id])
+}

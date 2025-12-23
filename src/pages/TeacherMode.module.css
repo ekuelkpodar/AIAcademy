@@ -1,0 +1,266 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 5rem;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: 3rem;
+}
+
+.iconBox {
+    width: 4rem;
+    height: 4rem;
+    background: rgba(16, 185, 129, 0.1);
+    /* Green/Teal tint */
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-tertiary);
+    /* Green/Teal */
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.title {
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: var(--font-heading);
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid var(--border-subtle);
+    padding-bottom: 1px;
+}
+
+.tab {
+    background: none;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+}
+
+.tab:hover {
+    color: var(--text-primary);
+}
+
+.activeTab {
+    color: var(--accent-tertiary);
+    border-bottom-color: var(--accent-tertiary);
+}
+
+/* Grid Layout */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+/* Workshop Card */
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    transition: border-color 0.2s;
+    height: 100%;
+}
+
+.card:hover {
+    border-color: var(--accent-tertiary);
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.cardTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-weight: 600;
+}
+
+.agenda {
+    margin-top: 1.5rem;
+    space-y: 1rem;
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 1.5rem;
+}
+
+.agendaItem {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.time {
+    font-family: monospace;
+    color: var(--accent-tertiary);
+    font-weight: 600;
+    min-width: 60px;
+}
+
+/* Resources */
+.resourceItem {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-radius: 0.75rem;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.resourceItem:hover {
+    border-color: var(--accent-tertiary);
+    background: rgba(16, 185, 129, 0.05);
+    /* Subtle tint */
+}
+
+/* Builder */
+.builderSection {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 1rem;
+    padding: 2rem;
+}
+
+/* Cohort Manager */
+.cohortCard {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.tableHeader {
+    display: grid;
+    grid-template-columns: 2fr 1fr 2fr 1fr;
+    padding: 1rem 1.5rem;
+    background: var(--bg-secondary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.tableRow {
+    display: grid;
+    grid-template-columns: 2fr 1fr 2fr 1fr;
+    padding: 1rem 1.5rem;
+    align-items: center;
+    border-bottom: 1px solid var(--border-subtle);
+    transition: background 0.2s;
+}
+
+.tableRow:last-child {
+    border-bottom: none;
+}
+
+.tableRow:hover {
+    background: var(--bg-secondary);
+}
+
+.avatar {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--accent-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: bold;
+    margin-right: 0.75rem;
+}
+
+.progressBarBg {
+    width: 100%;
+    height: 6px;
+    background: var(--bg-secondary);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progressBarFill {
+    height: 100%;
+    background: var(--accent-tertiary);
+    border-radius: 3px;
+}
+
+/* Live Session */
+.liveContainer {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    height: 600px;
+}
+
+.presenterView {
+    background: black;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    position: relative;
+    border: 1px solid var(--border-subtle);
+}
+
+.timerOverlay {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-family: monospace;
+    font-size: 1.25rem;
+    color: var(--accent-secondary);
+    border: 1px solid var(--accent-secondary);
+}
+
+.notesPanel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    overflow-y: auto;
+}

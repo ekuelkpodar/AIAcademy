@@ -1,73 +1,59 @@
-# React + TypeScript + Vite
+# Applied Insights: AI Academy & Agency
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack platform for learning AI and requesting AI consulting services.
 
-Currently, two official plugins are available:
+## Architecture
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Frontend**: Vite + React + TypeScript
+- **Backend**: Node.js + Express + TypeScript (in `/server`)
+- **Database**: PostgreSQL (via Docker)
+- **ORM**: Prisma
+- **Auth**: JWT via HTTP-only cookies
 
-## React Compiler
+## Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Prerequisites
+- Node.js (v18+)
+- Docker & Docker Compose
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 1. Database Setup
+Start the PostgreSQL container:
+```bash
+docker-compose up -d
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 2. Backend Setup
+Initialize the server, database schema, and seed data:
+```bash
+cd server
+npm install
+cp .env.example .env # Ensure DATABASE_URL matches docker-compose credentials
+npx prisma migrate dev
+npm run seed
+npm run dev
 ```
+The API will start on [http://localhost:4000](http://localhost:4000).
+
+### 3. Frontend Setup
+Run the web application:
+```bash
+# In the project root
+npm install
+npm run dev
+```
+The app will be available at [http://localhost:5173](http://localhost:5173).
+
+## Features
+
+### AI Academy
+- **Roadmap**: 30 or 60-day guided learning paths.
+- **Concept Map**: Visual explanations of AI concepts (fetched from API).
+- **Resource Library**: Curated tools and readings.
+
+### Agency Services
+- **Consulting Inquiries**: "Hire Us" form on the homepage.
+- **Services Page**: Detailed breakdown of consulting, development, and training services.
+
+### Authentication
+- Sign Up / Sign In functionality.
+- Protected routes (Teacher Mode is role-gated).

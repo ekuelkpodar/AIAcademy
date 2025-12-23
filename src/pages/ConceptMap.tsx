@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
-import { CONCEPTS_DATA, CATEGORY_SUBTITLES } from '../data/conceptsData';
+import { contents } from '../lib/api';
+import { CATEGORY_SUBTITLES } from '../data/conceptsData';
 import { Lightbulb, Network, BrainCircuit, Cpu, Layers, ShieldCheck } from 'lucide-react';
 import styles from './ConceptMap.module.css';
 
@@ -8,6 +9,24 @@ const ConceptMap: React.FC = () => {
     // Group concepts by category, preserving the order defined in CONCEPTS_DATA implicitly or by explicit list
     // We want a specific order: Foundations, Core ML, GenAI, Responsible AI
     const orderedCategories = ["Foundations", "Core ML", "GenAI", "Responsible AI"];
+    const [concepts, setConcepts] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        contents.getConcepts()
+            .then(data => setConcepts(data))
+            .finally(() => setLoading(false));
+    }, []);
+
+    if (loading) {
+        return (
+            <Layout>
+                <div className="flex items-center justify-center min-h-screen">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent-violet"></div>
+                </div>
+            </Layout>
+        )
+    }
 
     return (
         <Layout>
@@ -22,7 +41,7 @@ const ConceptMap: React.FC = () => {
 
                 <div className={styles.grid}>
                     {orderedCategories.map(category => (
-                        <CategorySection key={category} category={category} />
+                        <CategorySection key={category} category={category} allConcepts={concepts} />
                     ))}
                 </div>
 
@@ -31,18 +50,22 @@ const ConceptMap: React.FC = () => {
     );
 };
 
-const CategorySection: React.FC<{ category: string }> = ({ category }) => {
-    const categoryConcepts = CONCEPTS_DATA.filter(c => c.category === category);
+const CategorySection: React.FC<{ category: string; allConcepts: any[] }> = ({ category, allConcepts }) => {
+    const categoryConcepts = allConcepts.filter(c => c.category === category);
+
+    // If no concepts in this category, don't show the section
+    if (categoryConcepts.length === 0) return null;
+
     const subtitle = CATEGORY_SUBTITLES[category] || "";
 
     const getIcon = (cat: string) => {
         switch (cat) {
-            case 'Foundations': return <Lightbulb size={24} />;
-            case 'Deep Learning': return <Layers size={24} />;
-            case 'GenAI': return <BrainCircuit size={24} />;
-            case 'Core ML': return <Cpu size={24} />;
-            case 'Responsible AI': return <ShieldCheck size={24} />;
-            default: return <Network size={24} />;
+            case 'Foundations': return <Lightbulb size={28} />;
+            case 'Deep Learning': return <Layers size={28} />;
+            case 'GenAI': return <BrainCircuit size={28} />;
+            case 'Core ML': return <Cpu size={28} />;
+            case 'Responsible AI': return <ShieldCheck size={28} />;
+            default: return <Network size={28} />;
         }
     }
 
@@ -63,7 +86,7 @@ const CategorySection: React.FC<{ category: string }> = ({ category }) => {
                 </div>
                 <div>
                     <h2 className={styles.categoryTitle}>{category}</h2>
-                    <p className="text-sm text-text-muted">{subtitle}</p>
+                    <p className="text-base text-text-secondary opacity-80">{subtitle}</p>
                 </div>
             </div>
 
@@ -77,17 +100,18 @@ const CategorySection: React.FC<{ category: string }> = ({ category }) => {
                             </span>
                         </div>
 
-                        <div className="mb-4">
-                            <p className="text-xs font-bold uppercase tracking-wider text-accent-primary mb-1">Intuition</p>
+                        <div className="mb-5">
                             <p className={styles.summary}>{concept.intuition}</p>
                         </div>
 
-                        <div className={styles.intuitionBox}>
-                            <p className={styles.intuitionText}>
-                                <span className={styles.intuitionLabel}>Analogy:</span>
-                                {concept.analogy}
-                            </p>
-                        </div>
+                        {concept.analogy && (
+                            <div className={styles.intuitionBox}>
+                                <p className={styles.intuitionText}>
+                                    <span className={styles.intuitionLabel}>Analogy:</span>
+                                    {concept.analogy}
+                                </p>
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>

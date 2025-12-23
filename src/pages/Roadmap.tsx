@@ -2,14 +2,25 @@ import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import Button from '../components/common/Button';
 import { ModuleList } from '../components/roadmap/ModuleList';
-import { ROADMAP_30_DAY } from '../data/roadmapData';
+import { ROADMAP_30_DAY, ROADMAP_60_DAY } from '../data/roadmapData';
+import { useRoadmapProgress } from '../hooks/useRoadmapProgress';
 import type { DayPlan } from '../types';
-import { X, ExternalLink, PlayCircle } from 'lucide-react';
+import { X, ExternalLink, PlayCircle, CheckSquare, Square, Trophy } from 'lucide-react';
 import styles from './Roadmap.module.css';
 
 const Roadmap: React.FC = () => {
     const [track, setTrack] = useState<'30' | '60'>('30');
     const [selectedDay, setSelectedDay] = useState<DayPlan | null>(null);
+
+    const {
+        progress,
+        toggleDayCompletion,
+        toggleTaskCompletion,
+        isDayCompleted,
+        isTaskCompleted
+    } = useRoadmapProgress(track);
+
+    const currentData = track === '30' ? ROADMAP_30_DAY : ROADMAP_60_DAY;
 
     return (
         <Layout>
@@ -43,21 +54,45 @@ const Roadmap: React.FC = () => {
 
                 {/* Content */}
                 <ModuleList
-                    modules={ROADMAP_30_DAY}
+                    modules={currentData}
                     onDayClick={setSelectedDay}
+                    completedDays={progress.completedDays}
                 />
             </div>
 
             {/* Day Detail Sidebar / Modal */}
             {selectedDay && (
-                <DayDetailPanel day={selectedDay} onClose={() => setSelectedDay(null)} />
+                <DayDetailPanel
+                    day={selectedDay}
+                    onClose={() => setSelectedDay(null)}
+                    isCompleted={isDayCompleted(selectedDay.day)}
+                    onToggleComplete={() => toggleDayCompletion(selectedDay.day)}
+                    isTaskCompleted={(idx) => isTaskCompleted(selectedDay.day, idx)}
+                    onToggleTask={(idx) => toggleTaskCompletion(selectedDay.day, idx)}
+                />
             )}
         </Layout>
     );
 };
 
 // Sub-component for the detail panel
-const DayDetailPanel: React.FC<{ day: DayPlan; onClose: () => void }> = ({ day, onClose }) => {
+interface DayDetailProps {
+    day: DayPlan;
+    onClose: () => void;
+    isCompleted: boolean;
+    onToggleComplete: () => void;
+    isTaskCompleted: (index: number) => boolean;
+    onToggleTask: (index: number) => void;
+}
+
+const DayDetailPanel: React.FC<DayDetailProps> = ({
+    day,
+    onClose,
+    isCompleted,
+    onToggleComplete,
+    isTaskCompleted,
+    onToggleTask
+}) => {
     return (
         <div className={styles.modalBackdrop} onClick={onClose}>
             <div className={styles.modalPanel} onClick={e => e.stopPropagation()}>
@@ -85,19 +120,27 @@ const DayDetailPanel: React.FC<{ day: DayPlan; onClose: () => void }> = ({ day, 
 
                     {/* Objectives / Tasks */}
                     <div>
-                        <h3 className={styles.sectionTitle}>Today's Tasks</h3>
+                        <h3 className={styles.sectionTitle}>Today's Mission</h3>
                         <div className={styles.taskList}>
                             {day.tasks.map((task, i) => (
-                                <label key={i} className={styles.taskItem}>
-                                    <input type="checkbox" className="mt-1 w-4 h-4 rounded border-gray-600 text-accent-violet focus:ring-accent-violet bg-transparent" />
-                                    <span className="text-sm">{task}</span>
-                                </label>
+                                <div
+                                    key={i}
+                                    className={`${styles.taskItem} cursor-pointer hover:bg-white/5 transition-colors p-2 rounded flex items-start gap-3`}
+                                    onClick={() => onToggleTask(i)}
+                                >
+                                    <div className={`mt-1 ${isTaskCompleted(i) ? 'text-accent-tertiary' : 'text-text-muted'}`}>
+                                        {isTaskCompleted(i) ? <CheckSquare size={20} /> : <Square size={20} />}
+                                    </div>
+                                    <span className={`text-sm leading-relaxed ${isTaskCompleted(i) ? 'line-through text-text-muted' : 'text-text-primary'}`}>
+                                        {task}
+                                    </span>
+                                </div>
                             ))}
                         </div>
                     </div>
 
                     {/* Concepts */}
-                    <div>
+                    <div className="mt-8">
                         <h3 className={styles.sectionTitle}>Key Concepts</h3>
                         <div className={styles.conceptList}>
                             {day.concepts.map(cId => (
@@ -111,7 +154,7 @@ const DayDetailPanel: React.FC<{ day: DayPlan; onClose: () => void }> = ({ day, 
                     </div>
 
                     {/* Resources */}
-                    <div>
+                    <div className="mt-8">
                         <h3 className={styles.sectionTitle}>Resources</h3>
                         <div className={styles.conceptList}>
                             {day.resources.map(rId => (
@@ -124,8 +167,17 @@ const DayDetailPanel: React.FC<{ day: DayPlan; onClose: () => void }> = ({ day, 
                         </div>
                     </div>
 
-                    <div className="pt-8">
-                        <Button className="w-full">Mark Day Complete</Button>
+                    <div className="pt-8 mb-8">
+                        <Button
+                            className={`w-full transition-all duration-300 ${isCompleted ? 'bg-accent-tertiary/20 border-accent-tertiary text-accent-tertiary hover:bg-accent-tertiary/30' : ''}`}
+                            onClick={onToggleComplete}
+                        >
+                            {isCompleted ? (
+                                <span className="flex items-center gap-2 justify-center"><Trophy size={18} /> Day Complete!</span>
+                            ) : (
+                                "Mark Day Complete"
+                            )}
+                        </Button>
                     </div>
 
                 </div>

@@ -1,8 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
-import { ArrowRight, Brain, Code, Presentation, Zap, BookOpen, Users, GraduationCap, Quote, Check, Mail, ChevronDown } from 'lucide-react';
+import { ArrowRight, Brain, Code, Presentation, Zap, BookOpen, Users, GraduationCap, Quote, Check, ChevronDown } from 'lucide-react';
+import HireUsForm from '../components/HireUsForm';
 import styles from './Home.module.css';
+
+const MODELS = [
+    'ChatGPT', 'DeepSeek', 'Gemini', 'Meta AI', 'Le Chat',
+    'Claude', 'Grok', 'Kimi', 'HuggingChat', 'Pi', 'Qwen'
+];
+
 
 const Home: React.FC = () => {
     const navigate = useNavigate();
@@ -11,18 +18,26 @@ const Home: React.FC = () => {
     return (
         <Layout>
             {/* Hero Section */}
-            <section className={styles.heroSection}>
+            <section className={`${styles.heroSection} animate-fade-in`}>
                 <div className={styles.heroTag}>
                     <span className="w-2 h-2 rounded-full bg-accent-violet"></span>
-                    AI Academy • v1.0
+                    Applied Insights • v1.0
                 </div>
                 <h1 className={styles.heroTitle}>
-                    Master AI from <span className="text-gradient">Zero to Builder</span>
+                    <span className="text-gradient">Applied Insights</span>
                 </h1>
                 <p className={styles.heroSubtitle}>
-                    A guided journey to map AI concepts to real-world business value.
-                    Learn to think, build, and teach with code.
+                    Applied Insights that helps you scale ideas even is if it seems impossible.
                 </p>
+
+                <div className={styles.heroCtaGroup}>
+                    <button className={styles.primaryButton} onClick={() => navigate('/roadmap')}>
+                        Start the Journey <ArrowRight size={18} />
+                    </button>
+                    <button className={styles.secondaryButton} onClick={() => document.getElementById('paths')?.scrollIntoView({ behavior: 'smooth' })}>
+                        Explore Paths
+                    </button>
+                </div>
 
                 <div className={styles.heroStats}>
                     <div className={styles.statItem}>
@@ -44,8 +59,25 @@ const Home: React.FC = () => {
                 </div>
             </section>
 
+            {/* Tested Models Marquee */}
+            <section className={`${styles.modelsSection} animate-fade-in delay-100`}>
+                <div className={styles.modelsHeader}>Tested & Trusted with Leading Models</div>
+                <div className={styles.marqueeContainer}>
+                    <div className={styles.marqueeTrack}>
+                        {[...MODELS, ...MODELS, ...MODELS].map((model, idx) => (
+                            <div key={idx} className={styles.modelItem}>
+                                <span className={styles.modelDot}></span>
+                                {model}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+
+
             {/* Learning Paths */}
-            <section className={styles.section}>
+            <section id="paths" className={`${styles.section} animate-fade-in delay-200`}>
                 <div className={styles.sectionHeader}>
                     <h2 className={styles.sectionTitle}>Choose Your Learning Path</h2>
                     <p className={styles.sectionSubtitle}>Select the path that matches your current role and goals. Switch at any time.</p>
@@ -75,15 +107,11 @@ const Home: React.FC = () => {
                     />
                 </div>
 
-                <div className="flex justify-center mt-12">
-                    <button className={styles.primaryButton} onClick={() => navigate('/roadmap')}>
-                        Start the Journey <ArrowRight size={18} />
-                    </button>
-                </div>
+
             </section>
 
             {/* Curriculum Preview */}
-            <section className={styles.section}>
+            <section className={`${styles.section} animate-fade-in delay-300`}>
                 <div className={styles.sectionHeader}>
                     <h2 className={styles.sectionTitle}>What You'll Learn</h2>
                     <p className={styles.sectionSubtitle}>A structured 4-week sprint to AI competency.</p>
@@ -200,24 +228,25 @@ const Home: React.FC = () => {
                     />
                     <FaqItem
                         question="Is this course free?"
-                        answer="Yes! AI Academy is a completely free, open-source educational initiative."
+                        answer="Yes! Applied Insights is a completely free, open-source educational initiative."
                         isOpen={openFaq === 2}
                         toggle={() => setOpenFaq(openFaq === 2 ? null : 2)}
                     />
                 </div>
             </section>
 
-            {/* Newsletter */}
-            <section className={styles.section}>
-                <div className={styles.newsletterSection}>
-                    <h2 className="text-3xl font-bold mb-4">Stay Ahead of the Curve</h2>
-                    <p className="text-text-secondary max-w-xl mx-auto">AI is moving fast. Get weekly updates on new tools, trends, and tutorials directly to your inbox.</p>
-                    <div className={styles.inputGroup}>
-                        <input type="email" placeholder="Enter your email" className={styles.emailInput} />
-                        <button className={styles.primaryButton}>Subscribe</button>
-                    </div>
+
+            {/* Hire Us Form */}
+            <section id="hire-us" className={styles.section}>
+                <div className={styles.sectionHeader}>
+                    <h2 className={styles.sectionTitle}>Hire Us</h2>
+                    <p className={styles.sectionSubtitle}>We build high-impact AI agents and applications for ambitious teams.</p>
+                </div>
+                <div className="max-w-2xl mx-auto">
+                    <HireUsForm />
                 </div>
             </section>
+
 
             {/* Why This Works */}
             <section className={styles.section}>
@@ -259,7 +288,7 @@ const Home: React.FC = () => {
                     Start Free Today <ArrowRight size={18} />
                 </button>
             </section>
-        </Layout>
+        </Layout >
     );
 };
 

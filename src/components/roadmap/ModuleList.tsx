@@ -6,9 +6,10 @@ import styles from './ModuleList.module.css';
 interface ModuleListProps {
     modules: Module[];
     onDayClick: (day: DayPlan) => void;
+    completedDays: number[];
 }
 
-export const ModuleList: React.FC<ModuleListProps> = ({ modules, onDayClick }) => {
+export const ModuleList: React.FC<ModuleListProps> = ({ modules, onDayClick, completedDays }) => {
     return (
         <div className={styles.container}>
             {modules.map((module, index) => (
@@ -33,7 +34,12 @@ export const ModuleList: React.FC<ModuleListProps> = ({ modules, onDayClick }) =
 
                             <div className={styles.daysGrid}>
                                 {module.days.map((day) => (
-                                    <DayCard key={day.day} day={day} onClick={() => onDayClick(day)} />
+                                    <DayCard
+                                        key={day.day}
+                                        day={day}
+                                        isCompleted={completedDays.includes(day.day)}
+                                        onClick={() => onDayClick(day)}
+                                    />
                                 ))}
                             </div>
                         </div>
@@ -44,8 +50,7 @@ export const ModuleList: React.FC<ModuleListProps> = ({ modules, onDayClick }) =
     );
 };
 
-const DayCard: React.FC<{ day: DayPlan; onClick: () => void }> = ({ day, onClick }) => {
-    const isCompleted = false;
+const DayCard: React.FC<{ day: DayPlan; isCompleted: boolean; onClick: () => void }> = ({ day, isCompleted, onClick }) => {
     const isLocked = false;
 
     return (
